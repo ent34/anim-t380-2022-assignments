@@ -63,6 +63,5 @@ zipFolder.close() # Assuming that zipped file will save to that working director
 print(fileFormat.format(**frameInfo))
 
 #getCwd = os.getcwd()
-#print(getCwd)
 '''
 
