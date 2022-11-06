@@ -35,7 +35,7 @@ def frameInc(file):
 
 # Increment file
 for i in os.listdir(arg.seqLocation):
-    os.rename(arg.seqLocation + "/" + i, arg.seqLocation + "/" + fileFormat)
+    os.rename(os.path.join(arg.seqLocation, i), os.path.join(arg.seqLocation, fileFormat))
     print("New Name: ", fileFormat)
     fileFormat = frameInc(fileFormat)
 
