@@ -10,5 +10,5 @@
 * **zipFile:** bool, To Zip or Not To Zip?
 
 ## Example
-Run **framerename.py** in the command prompt. It will rename the sequence, print the renamed file name, and zip the file in the same location of the frames. 
+Run **framerename.py seqLocation zipFile** in the command prompt. It will rename the sequence, print the renamed file name, and zip the file in the same location of the frames. 
 
