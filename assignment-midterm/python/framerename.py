@@ -2,66 +2,55 @@
 # Author: Erika Taylor
 # Date: October 22, 2022
 '''
-Description: This script collects an existing frame sequence, renames the frames, then
-allows the user to zip the files if they so wish
+Description: This script collects an existing frame sequence, renames the frames based on the json naming convention,
+then allows the user to zip the files if they so wish
 '''
 
 # Testing Script for running over process and ideas for process
 
 import os
 import argparse
-from zipfile import ZipFile
+import json
+import shutil as zip
 
-# Creating a ZipFile
-zipFolder = ZipFile('frame_sequence.zip', 'w')
-
-# Set up arguments for user to enter naming convention
-fileParser = argparse.ArgumentParser(description="This allows you to change specific parts of your file")
-fileParser.add_argument("seqName", type=str, help="Name of frame sequence")
-fileParser.add_argument("frameStart", type=int, help="Where you'd like your frame sequence to start")
-fileParser.add_argument("fileType", type=str, help="Type of file")
+# Set up arguments for user to enter path and choice of zipping
+fileParser = argparse.ArgumentParser(description="This allows you to specify frame location and zip the file")
+fileParser.add_argument("seqLocation", type=str, help="Location path of frame sequence")
 fileParser.add_argument("zipFile", type=bool, help="To Zip or Not To Zip?")
 
-args = fileParser.parse_args()
+arg = fileParser.parse_args()
 
-# Keeping number format together
-if args.frameStart >= 100 and args.frameStart <= 999:
-    frameInfo = {
-        "front": "frame",
-        "name": "{}".format(args.seqName),
-        "number": "{}".format(args.frameStart),
-        "ext": "{}".format(args.fileType)
-    }
-elif args.frameStart >= 10:
-    frameInfo = {
-        "front": "frame",
-        "name": "{}".format(args.seqName),
-        "number": "0{}".format(args.frameStart),
-        "ext": "{}".format(args.fileType)
-    }
-else:
-    frameInfo = {
-        "front": "frame",
-        "name": "{}".format(args.seqName),
-        "number": "00{}".format(args.frameStart),
-        "ext": "{}".format(args.fileType)
-    }
+# Get naming convention
+getNamingConvention = open("sequenceConvention.json")
+namingConvention = json.load(getNamingConvention)
 
-# Establish file format
-fileFormat = "{front}_{name}_{number}.{ext}"
+# Establish file name format
+fileFormat = "{sequence}.{task}.{artist}.{version}.{frame}.{ext}".format(**namingConvention)
 
-'''
-for originalFrame in folder:
-    fileName = 'getFileName'
-    fileRename = os.rename(fileName, fileFormat) # Add File Number Iteration somewhere
-    if arg.zipFile == True:
-        zipFolder.write('fileRename') # Adding each file to the zipped file???
-    break
+def frameInc(file):
+    sF = file.split(".")
+    sF[4] = str(int(sF[4]) + 1).zfill(4)
+    newFile = ".".join(sF)
+    return newFile
 
-zipFolder.close() # Assuming that zipped file will save to that working directory
+# Increment file
+for i in os.listdir(arg.seqLocation):
+    os.rename(arg.seqLocation + "/" + i, arg.seqLocation + "/" + fileFormat)
+    print("New Name: ", fileFormat)
+    fileFormat = frameInc(fileFormat)
 
-print(fileFormat.format(**frameInfo))
+# Creating a ZipFile in Current Working Directory
+if arg.zipFile == True:
+    zipFile = zip.make_archive("renamed_frame", "zip", arg.seqLocation)
 
-#getCwd = os.getcwd()
-'''
+# Variable for current working directory
+getCwd = os.getcwd()
+
+# Change zip file location from current directory to frame sequence location
+zipLocation = zip.move(os.path.join(getCwd, zipFile), arg.seqLocation)
+
+# Print current zip file location
+print("Destination of Zip File:", zipLocation)
+
+
 
